@@ -72,7 +72,19 @@ def get_extensions():
 
     nvcc_flags = os.getenv("NVCC_FLAGS", "")
     nvcc_flags = [] if nvcc_flags == "" else nvcc_flags.split(" ")
-    nvcc_flags += ["-O3", "--use_fast_math"]
+    nvcc_flags += ["-O3", 
+                   "--use_fast_math", 
+                   "-allow-unsupported-compiler", 
+                   "-gencode=arch=compute_61,code=sm_61",  # GTX 1080 (Pascal)
+                   "-gencode=arch=compute_75,code=sm_75",  # Turing
+                   "-gencode=arch=compute_80,code=sm_80",  # Ampere (A100)
+                   "-gencode=arch=compute_86,code=sm_86",  # Ampere (RTX 30xx)
+                   "-gencode=arch=compute_89,code=sm_89",  # Ada (4090)
+                   "-gencode=arch=compute_90,code=sm_90",  # Hopper or future HPC
+                   # For future compatibility:
+                   '-gencode=arch=compute_90,code=compute_90'  # Forward compatibility fallback
+    ]
+
     if LINE_INFO:
         nvcc_flags += ["-lineinfo"]
     if torch.version.hip:
